@@ -17,7 +17,7 @@ public class MazeProblemLearner {
     Random rn = new Random(new Date().getTime());
     private double epsilonDecay = 0.0001;
 
-    //go able [height][width][top right bottom left]
+    //go-able [height][width][top right bottom left]
     int height;
     int width;
     int[] targetPos;
@@ -36,10 +36,6 @@ public class MazeProblemLearner {
         }
     }
 
-    /*
-     *@state   : The current x,y coordinates of the agent
-     *Returns an ArrayList containing all legal moves for the agent to make
-     */
     private ArrayList<int[]> getLegalMoves(int[] xy) {
         ArrayList<int[]> legalMoves = new ArrayList<>();
         int x = xy[0];
@@ -68,10 +64,6 @@ public class MazeProblemLearner {
         return legalMoves;
     }
 
-    /*
-     *@legalMoves : A list of legal moves that the agent can make
-     * Returns the x,y coordinates of the move with the greatest q-value
-     */
     private int[] getMaxQValueMove(ArrayList<int[]> legalMoves) {
         double maxValue = 0.0;
         int maxIndex = 0;
@@ -96,10 +88,6 @@ public class MazeProblemLearner {
         return bestMove;
     }
 
-    /*
-     *@state   : The current x,y coordinates of the agent
-     * Returns the largest q value for all states the agent can reach from its current state
-     */
     private double getMaxQValue(int[] state) {
         double maxValue = 0.0;
         ArrayList<int[]> legalMoves = getLegalMoves(state);
@@ -119,59 +107,43 @@ public class MazeProblemLearner {
         return maxValue;
     }
 
-    /*
-     *Returns either a random move (with epsilon % chance)
-     * or returns the move with the largest q-value
-     */
     private int[] getMove() {
         ArrayList<int[]> legalMoves = getLegalMoves(this.agentPosition);
-        if (this.rn.nextDouble() < this.epsilon) {
-            int randomMove = this.rn.nextInt(legalMoves.size());
+        if (rn.nextDouble() < epsilon) {
+            int randomMove = rn.nextInt(legalMoves.size());
             return legalMoves.get(randomMove);
         } else {
             return getMaxQValueMove(legalMoves);
         }
     }
 
-    /*
-     *@prevState : The state the agent was in prior to its last move (x,y coordinate)
-     *@reward    : The observed reward after moving to the agents current state
-     *@nextState : The current state of the agent (x,y coordinate)
-     */
     private void updateQValues(int[] prevState, float reward, int[] nextState) {
         int x = prevState[0];
         int y = prevState[1];
         Double value = this.qValues[y][x];
         double oldValue = (value != null) ? value : 0.0;
-        double newValue = oldValue + this.alpha * (reward + this.gamma * getMaxQValue(nextState) - oldValue);
+        double newValue = oldValue + alpha * (reward + gamma * getMaxQValue(nextState) - oldValue);
         this.qValues[y][x] = newValue;
     }
 
-    /*
-     *@move   : The move the agent has chosen to make
-     *@reward : The reward of the agent's move
-     */
     private void updateAgent(int[] move) {
         int[] prevState = this.agentPosition;
         this.agentPosition[0] = move[0];
         this.agentPosition[1] = move[1];
-        updateQValues(prevState, reachedPosition()?1:0, agentPosition);
+        updateQValues(prevState, reachedPosition() ? 1 : 0, agentPosition);
     }
 
     private boolean reachedPosition() {
         return (agentPosition[0] == targetPos[0]) && (agentPosition[1] == targetPos[1]);
     }
 
-    /*
-     *@numGames   : How many games the agent should play
-     */
-    public void train(int numGames) {
+    public void train(int max) {
         System.out.println("Starting to train:");
         int madeCount = 0;
         int gameCount = 0;
-        while (gameCount < numGames) {
-            if (gameCount % (numGames / 1000) == 0) {
-                System.out.println("Epoch: " + gameCount + "/" + numGames + " Game finish rate:" + ((double) madeCount) / gameCount);
+        while (gameCount < max) {
+            if (gameCount % (max / 1000) == 0) {
+                System.out.println("Epoch: " + gameCount + "/" + max + " Game finish rate:" + ((double) madeCount) / gameCount);
             }
             int[] startingPos = new int[]{rn.nextInt(width), rn.nextInt(height)};
             agentPosition = startingPos;
@@ -182,7 +154,7 @@ public class MazeProblemLearner {
                 moves.add(move);
                 walkCount++;
                 updateAgent(move);
-                if(reachedPosition()){
+                if (reachedPosition()) {
                     break;
                 }
                 if (walkCount > 3 * width * height) {
@@ -211,7 +183,7 @@ public class MazeProblemLearner {
             moves.add(move);
             walkCount++;
             updateAgent(move);
-            if(reachedPosition()){
+            if (reachedPosition()) {
                 break;
             }
             if (walkCount > 3 * width * height) {

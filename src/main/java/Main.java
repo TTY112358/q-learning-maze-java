@@ -28,9 +28,6 @@ public class Main {
             int wIndex = sc.nextInt();
             int hIndex = sc.nextInt();
             List<int[]> moves = learner.playTo(new int[]{wIndex, hIndex});
-//            for(int[] move: moves){
-//                System.out.println(move[0] + "," + move[1]);
-//            }
             if (moves == null) {
                 System.out.println("no solution");
                 continue;
