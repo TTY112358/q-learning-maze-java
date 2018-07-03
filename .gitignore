@@ -8,5 +8,6 @@
 out
 gen
 files/processedImage/**
+files/processedImages/**
 target/**
 files/*.tsv

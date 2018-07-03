@@ -12,17 +12,21 @@ public class MazeCutter {
     int xCount = 52;
     int yCount = 29;
     File originalImage = new File("./files/originalFile/maze.jpg");
-    File cutMazeImage = new File("./files/processedImage/cutMaze.jpg");
-    File binarizedImage = new File("./files/processedImage/binMaze.jpg");
-    File testImage = new File("./files/processedImage/testImage.jpg");
-    File resultImage = new File("./files/processedImage/resultImage.jpg");
-    File cellDir = new File("./files/processedImage/cells");
-    File resultTsv = new File("./files/mazeCsv.tsv");
+    File cutMazeImage = new File("./files/processedImages/cutMaze.jpg");
+    File binarizedImage = new File("./files/processedImages/binMaze.jpg");
+    File testImage = new File("./files/processedImages/testImage.jpg");
+    File resultImage = new File("./files/processedImages/resultImage.jpg");
+    File cellDir = new File("./files/processedImages/cells");
+    File resultTsv = new File("./files/maze.tsv");
     boolean cellInfo[][][] = new boolean[yCount][xCount][4];
 
     public MazeCutter() {
-        cutMazeImage.getParentFile().mkdirs();
-        cellDir.mkdirs();
+        if(!cellDir.exists()){
+            cellDir.mkdirs();
+        }
+        if(!resultImage.getParentFile().exists()){
+            resultImage.getParentFile().mkdirs();
+        }
         System.out.println("Cutting valid area from the image.");
         cutMazeFromPicture();
         System.out.println("Doing binarization.");
@@ -228,49 +232,4 @@ public class MazeCutter {
         }
     }
 
-    public void drawMovesOnNewMaze(int[] start, List<int[]> moves){
-        try {
-            int lineWidth = 4;
-            int cellWidth = 30;
-            int cellHeight = 30;
-            int width = lineWidth * (xCount + 1) + cellWidth * xCount;
-            int height = lineWidth * (yCount + 1) + cellHeight * yCount;
-            BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-            Graphics g = bufferedImage.getGraphics();
-            g.setColor(new Color(0xffffff));
-            g.fillRect(0, 0, width, height);
-            g.setColor(new Color(0x000000));
-            for (int i = 0; i < yCount; i++) {
-                for (int j = 0; j < xCount; j++) {
-                    int cellInnerX = j * cellWidth + (j + 1) * lineWidth;
-                    int cellInnerY = i * cellHeight + (i + 1) * lineWidth;
-                    if (!cellInfo[i][j][0]) {
-                        g.fillRect(cellInnerX - lineWidth, cellInnerY - lineWidth, cellWidth + 2 * lineWidth, lineWidth);
-                    }
-                    if (!cellInfo[i][j][1]) {
-                        g.fillRect(cellInnerX + cellWidth, cellInnerY - lineWidth, lineWidth, cellHeight + 2 * lineWidth);
-                    }
-                    if (!cellInfo[i][j][2]) {
-                        g.fillRect(cellInnerX - lineWidth, cellInnerY + cellHeight, cellWidth + 2 * lineWidth, lineWidth);
-                    }
-                    if (!cellInfo[i][j][3]) {
-                        g.fillRect(cellInnerX - lineWidth, cellInnerY - lineWidth, lineWidth, cellHeight + 2 * lineWidth);
-                    }
-                }
-            }
-            g.setColor(new Color(0x6485FF));
-            int startCellInnerX = start[0] * cellWidth + (start[0] + 1) * lineWidth;
-            int startCellInnerY = start[1] * cellHeight + (start[1] + 1) * lineWidth;
-            g.fillRect(startCellInnerX  , startCellInnerY, cellWidth, cellHeight);
-            g.setColor(new Color(0xA9FFA1));
-            for(int[] move:moves){
-                int cellInnerX = move[0] * cellWidth + (move[0] + 1) * lineWidth;
-                int cellInnerY = move[1] * cellHeight + (move[1] + 1) * lineWidth;
-                g.fillRect(cellInnerX  , cellInnerY, cellWidth, cellHeight);
-            }
-            ImageIO.write(bufferedImage, "jpg", resultImage);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }
