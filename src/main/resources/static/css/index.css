@@ -1,0 +1,37 @@
+.map-row{
+    height: 30px;
+}
+
+.cell{
+    padding: 1px;
+    display: inline-block;
+    box-sizing: border-box;
+    width: 30px;
+    height: 30px;
+    /*transition: background-color 0.3s;*/
+    border: 2px solid black;
+}
+
+.cell.trace{
+    background-color: #a7ff88;
+}
+.cell.target{
+    background-color: #ff0b08;
+}
+
+.cell:hover{
+    background-color: #7ed6ff;
+}
+
+.cell.top{
+    border-top-color: white;
+}
+.cell.right{
+    border-right-color: white;
+}
+.cell.bottom{
+    border-bottom-color: white;
+}
+.cell.left{
+    border-left-color: white;
+}

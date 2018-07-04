@@ -1,4 +1,4 @@
-package ImageDrawer;
+package imageDrawer;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

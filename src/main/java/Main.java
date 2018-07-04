@@ -1,6 +1,6 @@
-import ImageCutter.MazeCutter;
-import ImageDrawer.MazeDrawer;
-import QLearningLearner.MazeProblemLearner;
+import imageCutter.MazeCutter;
+import imageDrawer.MazeDrawer;
+import qLearningLearner.MazeProblemLearner;
 
 import java.io.*;
 import java.util.HashMap;

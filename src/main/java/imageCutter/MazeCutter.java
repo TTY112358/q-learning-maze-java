@@ -1,4 +1,4 @@
-package ImageCutter;
+package imageCutter;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -6,7 +6,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
 
 public class MazeCutter {
     int xCount = 52;

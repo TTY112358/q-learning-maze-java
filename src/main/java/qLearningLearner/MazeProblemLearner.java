@@ -1,4 +1,4 @@
-package QLearningLearner;
+package qLearningLearner;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -81,7 +81,7 @@ public class MazeProblemLearner {
             index++;
         }
         if (maxValue == 0.0) {
-            int randomMove = this.rn.nextInt(legalMoves.size());
+            int randomMove = rn.nextInt(legalMoves.size());
             return legalMoves.get(randomMove);
         }
         int[] bestMove = legalMoves.get(maxIndex);
@@ -108,7 +108,7 @@ public class MazeProblemLearner {
     }
 
     private int[] getMove() {
-        ArrayList<int[]> legalMoves = getLegalMoves(this.agentPosition);
+        ArrayList<int[]> legalMoves = getLegalMoves(agentPosition);
         if (rn.nextDouble() < epsilon) {
             int randomMove = rn.nextInt(legalMoves.size());
             return legalMoves.get(randomMove);
@@ -117,20 +117,30 @@ public class MazeProblemLearner {
         }
     }
 
-    private void updateQValues(int[] prevState, float reward, int[] nextState) {
+    private int[] getMoveNoExplore() {
+        ArrayList<int[]> legalMoves = getLegalMoves(agentPosition);
+        return getMaxQValueMove(legalMoves);
+    }
+
+    private void updateQValues(int[] prevState, float reward) {
         int x = prevState[0];
         int y = prevState[1];
-        Double value = this.qValues[y][x];
+        Double value = qValues[y][x];
         double oldValue = (value != null) ? value : 0.0;
-        double newValue = oldValue + alpha * (reward + gamma * getMaxQValue(nextState) - oldValue);
-        this.qValues[y][x] = newValue;
+        double newValue = (1- alpha) * oldValue + alpha * (reward + gamma * getMaxQValue(prevState));
+        qValues[y][x] = newValue;
     }
 
     private void updateAgent(int[] move) {
-        int[] prevState = this.agentPosition;
-        this.agentPosition[0] = move[0];
-        this.agentPosition[1] = move[1];
-        updateQValues(prevState, reachedPosition() ? 1 : 0, agentPosition);
+        int[] prevState = new int[]{agentPosition[0], agentPosition[1]};
+        agentPosition[0] = move[0];
+        agentPosition[1] = move[1];
+        updateQValues(prevState, reachedPosition() ? 1 : 0);
+    }
+
+    private void updateAgentSimple(int[] move) {
+        agentPosition[0] = move[0];
+        agentPosition[1] = move[1];
     }
 
     private boolean reachedPosition() {
@@ -143,7 +153,7 @@ public class MazeProblemLearner {
         int gameCount = 0;
         while (gameCount < max) {
             if (gameCount % (max / 1000) == 0) {
-                System.out.println("Epoch: " + gameCount + "/" + max + " Game finish rate:" + ((double) madeCount) / gameCount);
+                System.out.println("Epoch: " + gameCount + "/" + max);
             }
             int[] startingPos = new int[]{rn.nextInt(width), rn.nextInt(height)};
             agentPosition = startingPos;
@@ -179,10 +189,10 @@ public class MazeProblemLearner {
         }
         int walkCount = 0;
         while (true) {
-            int[] move = getMove();
+            int[] move = getMoveNoExplore();
             moves.add(move);
             walkCount++;
-            updateAgent(move);
+            updateAgentSimple(move);
             if (reachedPosition()) {
                 break;
             }
